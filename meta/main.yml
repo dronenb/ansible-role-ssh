@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  author: dronenb
+  description: Configures my preferred ssh settings
+  license: MIT
+  namespace: dronenb
+  role_name: ssh
+  min_ansible_version: "2.1"
+  platforms:
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+  galaxy_tags:
+    - ssh
