@@ -1,18 +1,26 @@
 ---
 # tasks file for ssh
-- name: Disable passwordless sudo if on Raspberry Pi
+- name: Disable passwordless sudo if on Raspberry Pi OS
+  become: true
   ansible.builtin.file:
     path: /etc/sudoers.d/010_pi-nopasswd
     state: absent
 
+- name: Disable passwordless sudo for cloud init users
+  become: true
+  ansible.builtin.file:
+    path: /etc/sudoers.d/90-cloud-init-users
+    state: absent
+
 - name: Harden SSH
+  become: true
+  loop:
+    - {search_string: 'PermitEmptyPasswords', line: 'PermitEmptyPasswords no'}
+    - {search_string: 'PermitRootLogin', line: 'PermitRootLogin no'}
+    - {search_string: 'Protocol', line: 'Protocol 2'}
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     line: "{{ item.line }}"
     search_string: "{{ item.search_string }}"
     state: present
-  loop:
-    - {search_string: 'PermitEmptyPasswords', line: 'PermitEmptyPasswords no'}
-    - {search_string: 'PermitRootLogin', line: 'PermitRootLogin no'}
-    - {search_string: 'Protocol', line: 'Protocol 2'}
   notify: Restart SSH
